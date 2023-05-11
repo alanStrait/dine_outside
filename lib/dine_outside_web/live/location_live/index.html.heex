@@ -1,0 +1,50 @@
+<.header>
+  Listing Locations
+  <:actions>
+    <.link patch={~p"/locations/new"}>
+      <.button>New Location</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="locations"
+  rows={@streams.locations}
+  row_click={fn {_id, location} -> JS.navigate(~p"/locations/#{location}") end}
+>
+  <:col :let={{_id, location}} label="Location"><%= location.location_id %></:col>
+  <:col :let={{_id, location}} label="Applicant"><%= location.applicant %></:col>
+  <:col :let={{_id, location}} label="Type"><%= location.type %></:col>
+  <:col :let={{_id, location}} label="Description"><%= location.description %></:col>
+  <:col :let={{_id, location}} label="Address"><%= location.address %></:col>
+  <:col :let={{_id, location}} label="Status"><%= location.status %></:col>
+  <:col :let={{_id, location}} label="Food items"><%= location.food_items %></:col>
+  <:col :let={{_id, location}} label="Latitude"><%= location.latitude %></:col>
+  <:col :let={{_id, location}} label="Longitude"><%= location.longitude %></:col>
+  <:col :let={{_id, location}} label="Approved"><%= location.approved %></:col>
+  <:action :let={{_id, location}}>
+    <div class="sr-only">
+      <.link navigate={~p"/locations/#{location}"}>Show</.link>
+    </div>
+    <.link patch={~p"/locations/#{location}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, location}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: location.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="location-modal" show on_cancel={JS.patch(~p"/locations")}>
+  <.live_component
+    module={DineOutsideWeb.LocationLive.FormComponent}
+    id={@location.id || :new}
+    title={@page_title}
+    action={@live_action}
+    location={@location}
+    patch={~p"/locations"}
+  />
+</.modal>
