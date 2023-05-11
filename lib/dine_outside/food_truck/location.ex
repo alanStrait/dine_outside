@@ -17,6 +17,32 @@ defmodule DineOutside.FoodTruck.Location do
     timestamps()
   end
 
+  def new(%{
+    loc_id: loc_id,
+    applicant: applicant,
+    type: type,
+    description: description,
+    address: address,
+    status: status,
+    food_items: food_items,
+    lat: lat,
+    lon: lon,
+    approved: approved,
+  }) do
+    %__MODULE__{
+      address: address,
+      applicant: applicant,
+      approved: approved,
+      description: description,
+      food_items: food_items,
+      latitude: lat,
+      location_id: loc_id,
+      longitude: lon,
+      status: status,
+      type: type,
+    }
+  end
+
   @doc false
   def changeset(location, attrs) do
     location
