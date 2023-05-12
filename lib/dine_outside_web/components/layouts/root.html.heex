@@ -12,6 +12,24 @@
     </script>
   </head>
   <body class="bg-white antialiased">
+    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
+      <li>
+        <.link
+          href={~p"/"}
+          class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+        >
+        Home
+        </.link>
+      </li>
+      <li>
+        <.link
+          href={~p"/locations"}
+          class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+        >
+        Locations
+        </.link>
+      </li>
+    </ul>
     <%= @inner_content %>
   </body>
 </html>
