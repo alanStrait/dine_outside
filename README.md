@@ -13,7 +13,9 @@ A place to find your food truck and cart options when in San Francisco.
   - [x] Haversine distance to truck / cart / service functio: `within_great_circle?/3`
   - [ ] Add form accepting anchor coordinates and button
 - [x] Add links to landing page to access the location live view
-- [ ] Add Quickstart to README
+- [x] Add Quickstart to README
+- [ ] Aestheticss and cleanup
+  - [x] Trim left margin of index view
 
 ## Quickstart
 
