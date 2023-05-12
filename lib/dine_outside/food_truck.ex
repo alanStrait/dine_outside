@@ -101,4 +101,15 @@ defmodule DineOutside.FoodTruck do
   def change_location(%Location{} = location, attrs \\ %{}) do
     Location.changeset(location, attrs)
   end
+
+  @doc """
+  within_great_circle? Returns true if provided location is within a great circle from the
+  provided anchor coordinates representing the users location. Otherwise
+  it returns false.
+  """
+  def within_great_circle?({_longitude, _latitude} = anchor_coordinates, location, meters) do
+    Haversine.distance(anchor_coordinates, {location.longitude, location.latitude}) <= meters
+  end
+
+  def within_great_circle?(_, _, _), do: false
 end
