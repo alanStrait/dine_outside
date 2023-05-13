@@ -7,6 +7,28 @@
   </:actions>
 </.header>
 
+<.simple_form
+  for={@form}
+  id="filter-form"
+  phx-change="validate"
+  phx-submit="filter"
+>
+  <div class="flex">
+    <div class="w-48 m-1">
+      <.input field={@form[:anchor_lat]} label="Anchor Latitude"/>
+    </div>
+    <div class="w-48 m-1">
+      <.input field={@form[:anchor_lon]} label="Anchor Longitude"/>
+    </div>
+    <div class="w-48 m-1">
+      <.input field={@form[:distance]} label="Distance (meters)"/>
+    </div>
+  </div>
+  <:actions>
+    <.button phx-disable-with="Filtering...">Filter</.button>
+  </:actions>
+</.simple_form>
+
 <.table
   id="locations"
   rows={@streams.locations}
