@@ -8,12 +8,14 @@ defmodule DineOutsideWeb.LocationLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     filter = Filter.new(%{"anchor_lat" => 37.7895, "anchor_lon" => -122.4046, "distance" => 5_000})
-
     filter_changeset = Filter.changeset(filter, %{})
+    locations = FoodTruck.list_locations()
 
     socket =
       socket
       |> assign(:filter, filter)
+      |> assign(:locations, locations)
+      |> assign(:filtered_locations, locations)
       |> assign(form: to_form(filter_changeset, as: :filter))
 
     {:ok, stream(socket, :locations, FoodTruck.list_locations())}
@@ -57,28 +59,21 @@ defmodule DineOutsideWeb.LocationLive.Index do
 
   @impl true
   def handle_event("filter", %{"filter" => filter_params}, socket) do
-    IO.inspect(filter_params, label: "\n\nFILTER_PARAMS\n\n")
+    current_locations = socket.assigns.filtered_locations
 
-    current_locations =
-      FoodTruck.list_locations()
-      # |> IO.inspect(label: "\nALL LOCATIONS\n")
-      # IO.inspect(socket.assigns.streams.locations, label: "\nLOCATIONS\n")
-
-    filtered_locations =
-      FoodTruck.list_filtered_locations(filter_params)
-      # |> IO.inspect(label: "\nFILTERED_LOcATIONS\n")
+    filtered_locations = FoodTruck.list_filtered_locations(filter_params)
 
     to_delete = current_locations -- filtered_locations
-    IO.inspect(to_delete, label: "\n\nTO_DELETE\n\n")
     socket = delete_from_streams_locations(socket, to_delete)
 
     to_add = filtered_locations -- current_locations
-    IO.inspect(to_add, label: "\n\nTO_ADD\n\n")
     socket = add_to_streams_locations(socket, to_add)
 
+    socket =
+      socket
+      |> assign(:filtered_locations, filtered_locations)
+      |> assign(form: to_form(filter_params, as: :filter))
 
-    socket = assign(socket, form: to_form(filter_params, as: :filter))
-    # {:noreply, stream_insert(socket, :locations, )}
     {:noreply, socket}
   end
 
