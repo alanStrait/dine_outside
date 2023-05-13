@@ -19,6 +19,9 @@ defmodule DineOutsideWeb.LocationLiveTest do
     test "lists all locations", %{conn: conn, location: location} do
       {:ok, _index_live, html} = live(conn, ~p"/locations")
 
+      assert html =~ "Filter"
+      assert html =~ "Anchor Longitude"
+
       assert html =~ "Listing Locations"
       assert html =~ location.address
     end
