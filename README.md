@@ -4,7 +4,7 @@ A place to find your food truck and cart options by distance when in San Francis
 
 ## Domain Overview
 
-`dine_outside` web app allows the user to find food trucks and carts by distance, as-the-crow-flies, according to latitude-longitude coordinates of their own location and that of the vendor.  An `anchor` location is set as the users latitude-longitude coordinates and the distance in meters that is desirable to walk to dine outside.
+`dine_outside` web app allows the user to find food trucks and carts by distance, as-the-crow-flies, according to latitude-longitude coordinates of their own location and that of the vendor.  An `anchor` location is set as the users `latitude-longitude coordinates` and the `distance in meters` that is desirable to walk to dine outside.
 
 The UI is initialized for `Union Square` where the highest density of food trucks and carts appear to be available.  All food trucks and carts are listed on entry to the listing page.  
 
@@ -19,7 +19,7 @@ The filter does have validation to keep the user within a loose bounding box tha
   * This took a bit of reading and experimentation with the `streams` API to make work as I had not used it before but was interested in trying it out.  I do not include this experimentation time as part of the time to complete this exercise.
   * The versions of Erlang/OTP/Elixir required is in the `Quickstart` below.
 * The data used came from the [engineering challenge](https://github.com/peck/engineering-assessment) github site.
-  * The data was surprising and did not offer much insight for what it meant.  E.g., I expected more vendors with a status of `APPROVED` or `ISSUED` but found most to be `EXPIRED` or `REQUESTED`, so I chose to include all the data and trust the user to `let the buyer be ware` by displaying as much data as could be squeezed onto the listing.
+  * The data was surprising in that it did not offer much insight for what it meant.  E.g., I expected more vendors with a status of `APPROVED` or `ISSUED` but found most to be `EXPIRED` or `REQUESTED`, so I chose to include all the data and trust the user to `let the buyer be ware` by displaying as much data as could be squeezed onto the listing.
   * A `docker-compose.yaml` that describes a container with the latest PostgreSQL is included as well as a bash script for accessing `psql` in-container.  See `Quickstart`.
   * The data was loaded into a `locations` table with a corresponding `Location` schema accessed through a `FoodTruck` context module.
     * The data load is performed in `priv/repo/seeds.exs` and is accounted for as part of the `setup` and `reset` directives in `Quickstart` below.
@@ -29,7 +29,7 @@ The filter does have validation to keep the user within a loose bounding box tha
       * `mix phx.new dine_outside --no-mailer`
     * The following was used to bootstrap the LiveView views:
       * `mix phx.gen.live FoodTruck Location locations location_id:integer applicant:string type:string description:string address:string status:string food_items:string latitude:float longitude:float approved:string`
-    * Incremental implementation related to this coding exercise is found at, ordered as displayed in VS Code project view:
+    * Incremental implementation related to this coding exercise is found in the following modules and functions, ordered as displayed in VS Code project view:
       * `DineOutside.FoodTruck.Filter`.
       * Complete creation `new/1` function in `DineOutside.FoodTruck.Location`.
       * `DineOutside.FoodTruck.Utility`.
@@ -40,25 +40,22 @@ The filter does have validation to keep the user within a loose bounding box tha
       * `index_html.heex` contains a funtion component `simple_form` for the `Filter` feature, including minimal `html` and `class` for look and feel using the included TailwindCSS library.
       * `DineOutsideWeb.Router`, added live actions to root scope.
 
-### Testing
-  * Data load was performed in `priv/repo/seeds.exs` and does not have any specific tests.
+### Approach to testing for this exercise
+  * Data load is performed in `priv/repo/seeds.exs` and does not have any specific tests.
   * Schema and defstruct modules are tested at a higher level of abstraction through their usage in the new context module, live view test, and data load.
   * Incremental support functions outside schema and and defstruct modules relied heavily on `doctest` test cases.
   * `DineOutsideWeb.LocationLiveTest` verified that new `Filter` form is included in generated HTML.
-
-### Known issues
-
-* Doc tests are not enable for generated doctest examples.
-  * Doc test for newly created modules are enabled.
+  * Doc tests are not enable for generated doctest examples.
+    * Doc test for newly created modules are enabled.
 
 ### Candidate feature enhancements
 
 * As implemented the static food truck and cart data is retrieved from the database for each Location listing event: on entry, and on filtering.
-  * I would introduce an `:ets` table for global lookup across HTTP sessions of this static data.  The database would then be hit once to populate `:ets` and all subsequent requests would be served from the reliable, in-VM shared memory solution provided by `:ets`.
+  * I would introduce an `:ets` table for global lookup across HTTP sessions of this static data.  The database would then be accessed once to populate `:ets` and all subsequent requests would be served from the reliable, in-VM shared memory solution provided by `:ets`.
 * PostgreSQL has a GIS / spatial extension called PostGIS.  This was not considered as part of this solution for two reasons: 
   * It would be overkill, in particular the ST_Geometry data type carries much additional semantics in order to make spatial queries where we simply need `as-the-crow-flies` distance to trucks and carts, and 
   * It implies having to hit the database for a simple spatial query on every WebSocket round trip which is much unnecessary database load.
-* The amount of data presented in the Location list view is a product of `surprising domain data state`.  With domain SME guidance, this presentation could be more discrete.  Given what I know at the moment, this is solved by `showing all` of the data.
+* The amount of data presented in the Location list view is a product of `unexpected domain data state` that needs to be explained by a SME.  With domain SME guidance, this presentation could be more discrete.  Given what I know at the moment, this is solved by `showing all` of the data.
 * Additional filter candidates:
   * `By food items`,
   * `By approval status` as informed by a domain expert,
@@ -93,7 +90,7 @@ Erlang/OTP 25 [erts-13.2] [source] [64-bit] [smp:16:16] [ds:16:16:10] [async-thr
 Elixir 1.14.3 (compiled with Erlang/OTP 25)
 ```
 
-Phoenix Framework, which includes the necessary LiveView version:
+Phoenix Framework, v1.7.2, which includes the necessary LiveView version:
 ```bash 
 mix help | ack phx.new #(snip)
 mix phx.new            # Creates a new Phoenix v1.7.2 application
@@ -107,8 +104,11 @@ To get up and running:
 ```bash
 # Clone this repository
 git clone git@github.com:alanStrait/dine_outside.git
-# Use docker compose to create a `dine_outside` database 
+# Get dependencies
 cd dine_outside
+mix deps.get
+# Use docker compose to create a `dine_outside` database 
+# (Requires a Docker engine, such as Docker Desktop)
 docker-compose up -d
 # Create dine_outside_* databases and seed database with CSV data
 mix ecto.setup
